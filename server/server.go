@@ -35,19 +35,19 @@ func logConsoleAndBrowser(msg string, w http.ResponseWriter) {
 	w.Write([]byte(msg))
 }
 
-func getCotacao(ctxBg context.Context, w http.ResponseWriter, r *http.Request, data *Cotacao) {
+func getCotacao(ctxBg context.Context, w http.ResponseWriter, r *http.Request, data Cotacao) (Cotacao, error) {
 	ctx, cancel := context.WithTimeout(ctxBg, 200*time.Millisecond)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		logConsoleAndBrowser("Erro ao preparar a requisição:"+err.Error(), w)
-		return
+		return Cotacao{}, err
 	}
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		logConsoleAndBrowser("Erro ao fazer a requisição:"+err.Error(), w)
-		return
+		return Cotacao{}, err
 	}
 
 	defer res.Body.Close()
@@ -55,28 +55,42 @@ func getCotacao(ctxBg context.Context, w http.ResponseWriter, r *http.Request, d
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		logConsoleAndBrowser("Erro ao ler a requisição:"+err.Error(), w)
-		return
+		return Cotacao{}, err
 	}
 	// log.Println(string(body))
 
-	err = json.Unmarshal(body, &data)
-	pretty.Println(*data)
+	err = json.Unmarshal(
+		body,
+		&data,
+	)
+
+	if err != nil {
+		logConsoleAndBrowser("Erro json.Unmarshal:"+err.Error(), w)
+		return Cotacao{}, err
+	}
 
 	// // jsonString:= fmt.Sprintf(res)
 	fmt.Fprint(w, string(body))
+	return data, nil
 }
 
 func cotacaoHandler(w http.ResponseWriter, r *http.Request) {
 
+	var data Cotacao
 	ctxBg := context.Background()
-	var data *Cotacao
 
-	getCotacao(ctxBg, w, r, data)
+	data, err := getCotacao(ctxBg, w, r, data)
+	if err != nil {
+		logConsoleAndBrowser("Erro getCotacao:"+err.Error(), w)
+	}
+	pretty.Println(data)
 
 }
 
 func main() {
+	port := "8080"
 	mux := http.NewServeMux()
 	mux.HandleFunc("GET /cotacao/", cotacaoHandler)
-	http.ListenAndServe("localhost:8080", mux)
+	pretty.Println("Rodando na porta:", port)
+	http.ListenAndServe("localhost:"+port, mux)
 }
