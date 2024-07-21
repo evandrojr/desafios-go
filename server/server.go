@@ -43,8 +43,17 @@ func initializeDB() (*sql.DB, error) {
 
 	query := `
     CREATE TABLE IF NOT EXISTS cotacoes (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        cotacao REAL
+        code TEXT,
+		codein TEXT,
+		name TEXT,
+		high TEXT,
+		low TEXT,
+		varBid TEXT,
+		pctChange TEXT,
+		bid TEXT,
+		ask TEXT,
+		timestamp TEXT,
+		create_date TEXT
     );`
 	_, err = db.Exec(query)
 	if err != nil {
@@ -101,7 +110,7 @@ func saveCotacao(ctx context.Context, data *Cotacao) error {
 	ctx, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
 	defer cancel()
 
-	err := insertWithTimeout(ctx, db, (*data).Usdbrl.Bid)
+	err := insertWithTimeout(ctx, db, data)
 	if err != nil {
 		fmt.Println("Erro ao inserir:", err)
 	} else {
@@ -110,10 +119,12 @@ func saveCotacao(ctx context.Context, data *Cotacao) error {
 	return nil
 }
 
-func insertWithTimeout(ctx context.Context, db *sql.DB, cotacao string) error {
-	query := "INSERT INTO cotacoes (cotacao) VALUES (?)"
+func insertWithTimeout(ctx context.Context, db *sql.DB, data *Cotacao) error {
+	query := `INSERT INTO cotacoes (code, codein, name, high, low, varBid, pctChange, bid, ask, timestamp, create_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
-	_, err := db.ExecContext(ctx, query, cotacao)
+	c := *data
+
+	_, err := db.ExecContext(ctx, query, c.Usdbrl.Code, c.Usdbrl.Codein, c.Usdbrl.Name, c.Usdbrl.High, c.Usdbrl.Low, c.Usdbrl.VarBid, c.Usdbrl.PctChange, c.Usdbrl.Bid, c.Usdbrl.Ask, c.Usdbrl.Timestamp, c.Usdbrl.CreateDate)
 	return err
 }
 
@@ -140,7 +151,16 @@ func cotacaoHandler(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		logConsoleAndBrowser("Erro SaveCotacao: "+err.Error(), w)
 	}
-	pretty.Println(data)
+
+	jsonCotacao, err := json.Marshal(data)
+	if err != nil {
+		logConsoleAndBrowser("Erro no json.Marshal da cotação: "+err.Error(), w)
+	}
+
+	fmt.Fprint(
+		w,
+		string(jsonCotacao),
+	)
 
 }
 
