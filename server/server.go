@@ -19,6 +19,9 @@ const url = "https://economia.awesomeapi.com.br/json/last/USD-BRL"
 
 var db *sql.DB
 
+const requestTimeout = 200 * time.Millisecond
+const dbTimeout = 10 * time.Millisecond
+
 type Cotacao struct {
 	Usdbrl struct {
 		Code       string `json:"code"`
@@ -63,23 +66,23 @@ func initializeDB() (*sql.DB, error) {
 	return db, nil
 }
 
-func logConsoleAndBrowser(msg string, w http.ResponseWriter) {
+func logErrorConsoleAndBrowser(msg string, w http.ResponseWriter) {
 	log.Println(msg)
-	w.Write([]byte(msg))
+	http.Error(w, msg, http.StatusInternalServerError)
 }
 
 func getCotacao(ctxBg context.Context, data *Cotacao) (*Cotacao, error) {
-	ctx, cancel := context.WithTimeout(ctxBg, 500*time.Millisecond)
+	ctx, cancel := context.WithTimeout(ctxBg, requestTimeout)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
-		errPersonalizado := errors.New("Erro ao preparar a requisição: " + err.Error())
+		errPersonalizado := errors.New("Erro ao preparar a requisição: \n" + err.Error())
 		return &Cotacao{}, errPersonalizado
 	}
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		errPersonalizado := errors.New("Erro ao fazer a requisição: " + err.Error())
+		errPersonalizado := errors.New("Erro ao fazer a requisição: \n" + err.Error())
 		return &Cotacao{}, errPersonalizado
 	}
 
@@ -87,7 +90,7 @@ func getCotacao(ctxBg context.Context, data *Cotacao) (*Cotacao, error) {
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		errPersonalizado := errors.New("Erro ao ler a requisição:" + err.Error())
+		errPersonalizado := errors.New("Erro ao ler a requisição: \n" + err.Error())
 		return &Cotacao{}, errPersonalizado
 	}
 
@@ -97,7 +100,7 @@ func getCotacao(ctxBg context.Context, data *Cotacao) (*Cotacao, error) {
 	)
 
 	if err != nil {
-		errPersonalizado := errors.New("Erro json.Unmarshal: " + err.Error() + err.Error())
+		errPersonalizado := errors.New("Erro json.Unmarshal: \n" + err.Error() + "\n" + err.Error())
 		return &Cotacao{}, errPersonalizado
 	}
 
@@ -107,14 +110,14 @@ func getCotacao(ctxBg context.Context, data *Cotacao) (*Cotacao, error) {
 }
 
 func saveCotacao(ctx context.Context, data *Cotacao) error {
-	ctx, cancel := context.WithTimeout(ctx, 10*time.Millisecond)
+	ctx, cancel := context.WithTimeout(ctx, dbTimeout)
 	defer cancel()
 
 	err := insertWithTimeout(ctx, db, data)
 	if err != nil {
-		fmt.Println("Erro ao inserir:", err)
+		log.Println("Erro ao inserir:", err)
 	} else {
-		fmt.Println("Inserido com sucesso")
+		log.Println("Inserido com sucesso")
 	}
 	return nil
 }
@@ -123,7 +126,6 @@ func insertWithTimeout(ctx context.Context, db *sql.DB, data *Cotacao) error {
 	query := `INSERT INTO cotacoes (code, codein, name, high, low, varBid, pctChange, bid, ask, timestamp, create_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	c := *data
-
 	_, err := db.ExecContext(ctx, query, c.Usdbrl.Code, c.Usdbrl.Codein, c.Usdbrl.Name, c.Usdbrl.High, c.Usdbrl.Low, c.Usdbrl.VarBid, c.Usdbrl.PctChange, c.Usdbrl.Bid, c.Usdbrl.Ask, c.Usdbrl.Timestamp, c.Usdbrl.CreateDate)
 	return err
 }
@@ -135,7 +137,8 @@ func cotacaoHandler(w http.ResponseWriter, r *http.Request) {
 
 	_, err := getCotacao(ctxRequisicao, &data)
 	if err != nil {
-		logConsoleAndBrowser("Erro getCotacao: "+err.Error(), w)
+		logErrorConsoleAndBrowser("Erro getCotacao: "+err.Error(), w)
+
 		return
 	} else {
 		pretty.Println(data)
@@ -149,12 +152,12 @@ func cotacaoHandler(w http.ResponseWriter, r *http.Request) {
 	ctxSalvamento := context.Background()
 	err = saveCotacao(ctxSalvamento, &data)
 	if err != nil {
-		logConsoleAndBrowser("Erro SaveCotacao: "+err.Error(), w)
+		logErrorConsoleAndBrowser("Erro SaveCotacao: "+err.Error(), w)
 	}
 
 	jsonCotacao, err := json.Marshal(data)
 	if err != nil {
-		logConsoleAndBrowser("Erro no json.Marshal da cotação: "+err.Error(), w)
+		logErrorConsoleAndBrowser("Erro no json.Marshal da cotação: "+err.Error(), w)
 	}
 
 	fmt.Fprint(
