@@ -1,6 +1,31 @@
-# desafio-go-1
+# Pós Go Expert 2024 - Desafio 1
 
 
-TO DO:
+Usando o tmux para dividir a tela em dois painéis para ficar visível a execução do servidor e cliente simultaneamente.
 
-No cliente receber o erro 500 do servidor e explicar que o erro foi no servidor 
+
+## Instalação em GNU/Linux compatíveis com pacotes Debian
+
+```
+sudo apt install tmux -y
+go install github.com/air-verse/air@latest
+```
+
+
+## Execução
+
+```
+./start.sh
+```
+
+No painel do client para ficar pegando novas requisições:
+```
+go run client/client.go
+```
+
+
+## Finalizar
+
+```
+./stop.sh
+```
