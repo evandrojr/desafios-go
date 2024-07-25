@@ -4,13 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"net/http"
 	"os"
 	"time"
 
+	"github.com/evandrojr/desafio-go-1/shared"
 	"github.com/kr/pretty"
 )
 
@@ -19,25 +19,9 @@ import (
 const url = "http://localhost:8080/cotacao"
 const requestTimeout = 300 * time.Millisecond
 
-type Cotacao struct {
-	Usdbrl struct {
-		Code       string `json:"code"`
-		Codein     string `json:"codein"`
-		Name       string `json:"name"`
-		High       string `json:"high"`
-		Low        string `json:"low"`
-		VarBid     string `json:"varBid"`
-		PctChange  string `json:"pctChange"`
-		Bid        string `json:"bid"`
-		Ask        string `json:"ask"`
-		Timestamp  string `json:"timestamp"`
-		CreateDate string `json:"create_date"`
-	} `json:"USDBRL"`
-}
-
 func main() {
 
-	var data Cotacao
+	var data shared.Cotacao
 	ctxRequisicao := context.Background()
 
 	_, err := getCotacao(ctxRequisicao, &data)
@@ -54,58 +38,62 @@ func main() {
 		log.Fatal(err)
 	}
 
-	fmt.Println("JSON escrito no arquivo com sucesso!")
+	log.Println("JSON escrito no arquivo com sucesso!")
 }
 
-// req, err := http.Get(url)
-// if err != nil {
-// 	log.Fatal("Erro ao fazer a requisição:" + err.Error())
-// }
-// defer req.Body.Close()
-
-// res, err := io.ReadAll(req.Body)
-// if err != nil {
-// 	log.Fatal("Erro ao fazer a requisição:" + err.Error())
-// }
-// // fmt.Println(string(res))
-
-// var data Cotacao
-// err = json.Unmarshal(res, &data)
-// pretty.Println(data)
-// }
-
-func getCotacao(ctxBg context.Context, data *Cotacao) (*Cotacao, error) {
-	ctx, cancel := context.WithTimeout(ctxBg, requestTimeout)
-	defer cancel()
-
+func prepareRequest(ctx context.Context) (*http.Request, error) {
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
-		errPersonalizado := errors.New("Erro ao preparar a requisição: " + err.Error())
-		return &Cotacao{}, errPersonalizado
+		return nil, errors.New("Erro ao preparar a requisição: " + err.Error())
 	}
+	return req, nil
+}
+
+func makeRequest(req *http.Request) ([]byte, error) {
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
-		errPersonalizado := errors.New("Erro ao fazer a requisição: " + err.Error())
-		return &Cotacao{}, errPersonalizado
+		return nil, errors.New("Erro ao fazer a requisição: " + err.Error())
 	}
-
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
-		errPersonalizado := errors.New("Erro ao ler a requisição:" + err.Error())
-		return &Cotacao{}, errPersonalizado
+		return nil, errors.New("Erro ao ler a requisição: " + err.Error())
 	}
-	pretty.Println(string(body))
+	return body, nil
+}
+
+func decodeCotacao(body []byte, data *shared.Cotacao) error {
+	if err := json.Unmarshal(body, data); err != nil {
+		return errors.New("Erro json.Unmarshal: " + err.Error())
+	}
+	return nil
+}
+
+func getCotacao(ctxBg context.Context, data *shared.Cotacao) (*shared.Cotacao, error) {
+	ctx, cancel := context.WithTimeout(ctxBg, requestTimeout)
+	defer cancel()
+
+	req, err := prepareRequest(ctx)
+	if err != nil {
+		return &shared.Cotacao{}, err
+	}
+
+	body, err := makeRequest(req)
+	if err != nil {
+		return &shared.Cotacao{}, err
+	}
+
+	log.Println(string(body))
 
 	err = json.Unmarshal(
 		body,
 		data,
 	)
 
+	decodeCotacao(body, data)
 	if err != nil {
-		errPersonalizado := errors.New("Erro json.Unmarshal: " + err.Error() + err.Error())
-		return &Cotacao{}, errPersonalizado
+		return &shared.Cotacao{}, err
 	}
 
 	// // jsonString:= fmt.Sprintf(res)

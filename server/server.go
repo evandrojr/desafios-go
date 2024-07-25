@@ -11,6 +11,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/evandrojr/desafio-go-1/shared"
 	"github.com/kr/pretty"
 	_ "github.com/mattn/go-sqlite3"
 )
@@ -21,22 +22,6 @@ var db *sql.DB
 
 const requestTimeout = 200 * time.Millisecond
 const dbTimeout = 10 * time.Millisecond
-
-type Cotacao struct {
-	Usdbrl struct {
-		Code       string `json:"code"`
-		Codein     string `json:"codein"`
-		Name       string `json:"name"`
-		High       string `json:"high"`
-		Low        string `json:"low"`
-		VarBid     string `json:"varBid"`
-		PctChange  string `json:"pctChange"`
-		Bid        string `json:"bid"`
-		Ask        string `json:"ask"`
-		Timestamp  string `json:"timestamp"`
-		CreateDate string `json:"create_date"`
-	} `json:"USDBRL"`
-}
 
 func initializeDB() (*sql.DB, error) {
 	db, err := sql.Open("sqlite3", "cotacoes.db")
@@ -71,19 +56,19 @@ func logErrorConsoleAndBrowser(msg string, w http.ResponseWriter) {
 	http.Error(w, msg, http.StatusInternalServerError)
 }
 
-func getCotacao(ctxBg context.Context, data *Cotacao) (*Cotacao, error) {
+func getCotacao(ctxBg context.Context, data *shared.Cotacao) (*shared.Cotacao, error) {
 	ctx, cancel := context.WithTimeout(ctxBg, requestTimeout)
 	defer cancel()
 
 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
 	if err != nil {
 		errPersonalizado := errors.New("Erro ao preparar a requisição: \n" + err.Error())
-		return &Cotacao{}, errPersonalizado
+		return &shared.Cotacao{}, errPersonalizado
 	}
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
 		errPersonalizado := errors.New("Erro ao fazer a requisição: \n" + err.Error())
-		return &Cotacao{}, errPersonalizado
+		return &shared.Cotacao{}, errPersonalizado
 	}
 
 	defer res.Body.Close()
@@ -91,7 +76,7 @@ func getCotacao(ctxBg context.Context, data *Cotacao) (*Cotacao, error) {
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
 		errPersonalizado := errors.New("Erro ao ler a requisição: \n" + err.Error())
-		return &Cotacao{}, errPersonalizado
+		return &shared.Cotacao{}, errPersonalizado
 	}
 
 	err = json.Unmarshal(
@@ -101,7 +86,7 @@ func getCotacao(ctxBg context.Context, data *Cotacao) (*Cotacao, error) {
 
 	if err != nil {
 		errPersonalizado := errors.New("Erro json.Unmarshal: \n" + err.Error() + "\n" + err.Error())
-		return &Cotacao{}, errPersonalizado
+		return &shared.Cotacao{}, errPersonalizado
 	}
 
 	// // jsonString:= fmt.Sprintf(res)
@@ -109,7 +94,7 @@ func getCotacao(ctxBg context.Context, data *Cotacao) (*Cotacao, error) {
 	return data, nil
 }
 
-func saveCotacao(ctx context.Context, data *Cotacao) error {
+func saveCotacao(ctx context.Context, data *shared.Cotacao) error {
 	ctx, cancel := context.WithTimeout(ctx, dbTimeout)
 	defer cancel()
 
@@ -122,7 +107,7 @@ func saveCotacao(ctx context.Context, data *Cotacao) error {
 	return nil
 }
 
-func insertWithTimeout(ctx context.Context, db *sql.DB, data *Cotacao) error {
+func insertWithTimeout(ctx context.Context, db *sql.DB, data *shared.Cotacao) error {
 	query := `INSERT INTO cotacoes (code, codein, name, high, low, varBid, pctChange, bid, ask, timestamp, create_date) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	c := *data
@@ -132,7 +117,7 @@ func insertWithTimeout(ctx context.Context, db *sql.DB, data *Cotacao) error {
 
 func cotacaoHandler(w http.ResponseWriter, r *http.Request) {
 
-	var data Cotacao
+	var data shared.Cotacao
 	ctxRequisicao := context.Background()
 
 	_, err := getCotacao(ctxRequisicao, &data)
