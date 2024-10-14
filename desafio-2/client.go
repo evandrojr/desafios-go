@@ -1,102 +1,104 @@
 package main
 
-import (
-	"context"
-	"encoding/json"
-	"errors"
-	"io"
-	"log"
-	"net/http"
-	"os"
-	"time"
+// import (
+// 	"context"
+// 	"encoding/json"
+// 	"errors"
+// 	"io"
+// 	"log"
+// 	"net/http"
+// 	"os"
+// 	"time"
 
-	"github.com/evandrojr/desafio-go-1/shared"
-	"github.com/kr/pretty"
-)
+// 	"github.com/kr/pretty"
+// 	// "github.com/kr/pretty"
+// 	// "github.com/evandrojr/desafio-go-1/shared"
+// 	// "github.com/kr/pretty"
+// )
 
-// const url = "http://localhost:8080"
+// // const url = "http://localhost:8080"
 
-const url = "http://localhost:8080/cotacao"
-const requestTimeout = 300 * time.Millisecond
+// const url = "http://localhost:8080/cotacao"
+// const requestTimeout = 300 * time.Millisecond
 
-func Client() {
+// func Client() {
 
-	var data shared.Cotacao
-	ctxRequisicao := context.Background()
+// 	var data shared.Cotacao
+// 	ctxRequisicao := context.Background()
 
-	_, err := getCotacao(ctxRequisicao, &data)
-	if err != nil {
-		log.Println("Erro getCotacao: " + err.Error())
-		return
-	} else {
-		pretty.Println(data.Usdbrl.Bid)
-	}
-	conteudo := "Dólar: " + data.Usdbrl.Bid
+// 	_, err := getCotacao(ctxRequisicao, &data)
+// 	if err != nil {
+// 		log.Println("Erro getCotacao: " + err.Error())
+// 		return
+// 	} else {
+// 		pretty.Println(data.Usdbrl.Bid)
+// 	}
+// 	conteudo := "Dólar: " + data.Usdbrl.Bid
 
-	err = os.WriteFile("cotacao.txt", []byte(conteudo), 0644)
-	if err != nil {
-		log.Fatal(err)
-	}
+// 	err = os.WriteFile("cotacao.txt", []byte(conteudo), 0644)
+// 	if err != nil {
+// 		log.Fatal(err)
+// 	}
 
-	log.Println("JSON escrito no arquivo com sucesso!")
-}
+// 	log.Println("JSON escrito no arquivo com sucesso!")
+// }
 
-func prepareRequest(ctx context.Context) (*http.Request, error) {
-	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
-	if err != nil {
-		return nil, errors.New("Erro ao preparar a requisição: " + err.Error())
-	}
-	return req, nil
-}
+// func prepareRequest(ctx context.Context) (*http.Request, error) {
+// 	req, err := http.NewRequestWithContext(ctx, "GET", url, nil)
+// 	if err != nil {
+// 		return nil, errors.New("Erro ao preparar a requisição: " + err.Error())
+// 	}
+// 	return req, nil
+// }
 
-func makeRequest(req *http.Request) ([]byte, error) {
-	res, err := http.DefaultClient.Do(req)
-	if err != nil {
-		return nil, errors.New("Erro ao fazer a requisição: " + err.Error())
-	}
-	defer res.Body.Close()
+// func makeRequest(req *http.Request) ([]byte, error) {
+// 	res, err := http.DefaultClient.Do(req)
+// 	if err != nil {
+// 		return nil, errors.New("Erro ao fazer a requisição: " + err.Error())
+// 	}
+// 	defer res.Body.Close()
 
-	body, err := io.ReadAll(res.Body)
-	if err != nil {
-		return nil, errors.New("Erro ao ler a requisição: " + err.Error())
-	}
-	return body, nil
-}
+// 	body, err := io.ReadAll(res.Body)
+// 	if err != nil {
+// 		return nil, errors.New("Erro ao ler a requisição: " + err.Error())
+// 	}
+// 	return body, nil
+// }
 
-func decodeCotacao(body []byte, data *shared.Cotacao) error {
-	if err := json.Unmarshal(body, data); err != nil {
-		return errors.New("Erro json.Unmarshal: " + err.Error())
-	}
-	return nil
-}
+// func decodeCotacao(body []byte, data *shared.Cotacao) error {
+// 	if err := json.Unmarshal(body, data); err != nil {
+// 		return errors.New("Erro json.Unmarshal: " + err.Error())
+// 	}
+// 	return nil
+// }
 
-func getCotacao(ctxBg context.Context, data *shared.Cotacao) (*shared.Cotacao, error) {
-	ctx, cancel := context.WithTimeout(ctxBg, requestTimeout)
-	defer cancel()
+// func getCotacao(ctxBg context.Context, data *shared.Cotacao) (*shared.Cotacao, error) {
+// 	ctx, cancel := context.WithTimeout(ctxBg, requestTimeout)
+// 	defer cancel()
 
-	req, err := prepareRequest(ctx)
-	if err != nil {
-		return &shared.Cotacao{}, err
-	}
+// 	req, err := prepareRequest(ctx)
+// 	if err != nil {
+// 		return &shared.Cotacao{}, err
+// 	}
 
-	body, err := makeRequest(req)
-	if err != nil {
-		return &shared.Cotacao{}, err
-	}
+// 	body, err := makeRequest(req)
+// 	if err != nil {
+// 		return &shared.Cotacao{}, err
+// 	}
 
-	log.Println(string(body))
+// 	log.Println(string(body))
 
-	err = json.Unmarshal(
-		body,
-		data,
-	)
+// 	err = json.Unmarshal(
+// 		body,
+// 		data,
+// 	)
 
-	decodeCotacao(body, data)
-	if err != nil {
-		return &shared.Cotacao{}, err
-	}
+// 	decodeCotacao(body, data)
+// 	if err != nil {
+// 		return &shared.Cotacao{}, err
+// 	}
 
-	// // jsonString:= fmt.Sprintf(res)
+// 	// // jsonString:= fmt.Sprintf(res)
 
-	return data, nil
-}
+// 	return data, nil
+// }
