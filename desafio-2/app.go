@@ -22,8 +22,6 @@ func requestCep(url string, ret chan Ret) {
 		return
 	}
 
-	// fmt.Printf("client: status code: %d\n", res.StatusCode)
-
 	defer res.Body.Close()
 
 	body, err := io.ReadAll(res.Body)
@@ -32,7 +30,6 @@ func requestCep(url string, ret chan Ret) {
 		ret <- Ret{Err: err.Error(), HttpCode: res.StatusCode}
 		return
 	}
-	// fmt.Println(string(body))
 	t := time.Now()
 
 	ret <- Ret{
