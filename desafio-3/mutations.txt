@@ -1,7 +1,0 @@
-mutation MyCreateCategory {
-  createCategory(input: {name: "Limpeza", description: "Materiais de limpeza"}) {
-    id
-    name
-    description
-  }
-}
