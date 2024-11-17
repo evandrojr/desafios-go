@@ -1,5 +1,18 @@
 # Desafio 3
 
+Fazer ==========================
+
+- Service ListOrders com GRPC
+- Query ListOrders GraphQL
+
+Fazendo ========================
+
+- Endpoint REST (GET /order)
+
+Pronto =========================
+
+Executar migrations
+
 
 ## Requisitos
 

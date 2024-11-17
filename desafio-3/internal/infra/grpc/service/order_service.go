@@ -24,7 +24,7 @@ func (s *OrderService) CreateOrder(ctx context.Context, in *pb.CreateOrderReques
 		Price: float64(in.Price),
 		Tax:   float64(in.Tax),
 	}
-	output, err := s.CreateOrderUseCase.Execute(dto)
+	output, err := s.CreateOrderUseCase.ExecuteCreate(dto)
 	if err != nil {
 		return nil, err
 	}

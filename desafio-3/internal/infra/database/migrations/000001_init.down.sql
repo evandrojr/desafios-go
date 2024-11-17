@@ -1,2 +1,1 @@
-DROP TABLE IF EXISTS courses;
-DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS orders;

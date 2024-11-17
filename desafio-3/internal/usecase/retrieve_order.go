@@ -5,26 +5,24 @@ import (
 	"github.com/devfullcycle/20-CleanArch/pkg/events"
 )
 
-type OrderInputDTO struct {
-	ID    string  `json:"id"`
-	Price float64 `json:"price"`
-	Tax   float64 `json:"tax"`
+type RetrieveOrderInputDTO struct {
+	ID string `json:"id"`
 }
 
-type OrderOutputDTO struct {
+type RetrieveOrderOutputDTO struct {
 	ID         string  `json:"id"`
 	Price      float64 `json:"price"`
 	Tax        float64 `json:"tax"`
 	FinalPrice float64 `json:"final_price"`
 }
 
-type CreateOrderUseCase struct {
+type RetrieveOrderUseCase struct {
 	OrderRepository entity.OrderRepositoryInterface
-	OrderCreated    events.EventInterface
+	OrderRetrieve   events.EventInterface
 	EventDispatcher events.EventDispatcherInterface
 }
 
-func NewCreateOrderUseCase(
+func NewRetrieveOrderUseCase(
 	OrderRepository entity.OrderRepositoryInterface,
 	OrderCreated events.EventInterface,
 	EventDispatcher events.EventDispatcherInterface,
@@ -36,7 +34,7 @@ func NewCreateOrderUseCase(
 	}
 }
 
-func (c *CreateOrderUseCase) ExecuteCreate(input OrderInputDTO) (OrderOutputDTO, error) {
+func (c *CreateOrderUseCase) RetrieveExecute(input OrderInputDTO) (OrderOutputDTO, error) {
 	order := entity.Order{
 		ID:    input.ID,
 		Price: input.Price,

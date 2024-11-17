@@ -18,7 +18,7 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input *model.OrderIn
 		Price: float64(input.Price),
 		Tax:   float64(input.Tax),
 	}
-	output, err := r.CreateOrderUseCase.Execute(dto)
+	output, err := r.CreateOrderUseCase.ExecuteCreate(dto)
 	if err != nil {
 		return nil, err
 	}

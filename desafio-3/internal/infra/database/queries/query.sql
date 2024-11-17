@@ -1,25 +1,25 @@
--- name: ListCategories :many
-SELECT * FROM categories;
+-- name: ListOrders :many
+SELECT * FROM orders;
 
 -- name: GetCategory :one
-SELECT * FROM categories 
+SELECT * FROM orders 
 WHERE id = ?;
 
 -- name: CreateCategory :exec
-INSERT INTO categories (id, name, description) 
+INSERT INTO orders (id, name, description) 
 VALUES (?,?,?);
 
 -- name: UpdateCategory :exec
-UPDATE categories SET name = ?, description = ? 
+UPDATE orders SET name = ?, description = ? 
 WHERE id = ?;
 
 -- name: DeleteCategory :exec
-DELETE FROM categories WHERE id = ?;
+DELETE FROM orders WHERE id = ?;
 
--- name: CreateCourse :exec
-INSERT INTO courses (id, name, description, category_id, price)
-VALUES (?,?,?,?,?);
+-- -- name: CreateCourse :exec
+-- INSERT INTO courses (id, name, description, category_id, price)
+-- VALUES (?,?,?,?,?);
 
--- name: ListCourses :many
-SELECT c.*, ca.name as category_name 
-FROM courses c JOIN categories ca ON c.category_id = ca.id;
+-- -- name: ListCourses :many
+-- SELECT c.*, ca.name as category_name 
+-- FROM courses c JOIN orders ca ON c.category_id = ca.id;
