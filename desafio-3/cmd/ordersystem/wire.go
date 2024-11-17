@@ -6,12 +6,13 @@ package main
 import (
 	"database/sql"
 
-	"github.com/devfullcycle/20-CleanArch/internal/entity"
-	"github.com/devfullcycle/20-CleanArch/internal/event"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/database"
-	"github.com/devfullcycle/20-CleanArch/internal/infra/web"
-	"github.com/devfullcycle/20-CleanArch/internal/usecase"
-	"github.com/devfullcycle/20-CleanArch/pkg/events"
+	"desafio3/internal/entity"
+	"desafio3/internal/event"
+	"desafio3/internal/infra/database"
+	"desafio3/internal/infra/web"
+	"desafio3/internal/usecase"
+	"desafio3/pkg/events"
+
 	"github.com/google/wire"
 )
 

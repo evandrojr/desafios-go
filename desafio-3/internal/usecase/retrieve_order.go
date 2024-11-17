@@ -1,8 +1,8 @@
 package usecase
 
 import (
-	"github.com/devfullcycle/20-CleanArch/internal/entity"
-	"github.com/devfullcycle/20-CleanArch/pkg/events"
+	"desafio3/internal/entity"
+	"desafio3/pkg/events"
 )
 
 type RetrievalOrderInputDTO struct {
@@ -18,19 +18,19 @@ type RetrievalOrderOutputDTO struct {
 
 type RetrievalOrderUseCase struct {
 	OrderRepository entity.OrderRepositoryInterface
-	OrderRetrieval   events.EventInterface
+	OrderRetrieval  events.EventInterface
 	EventDispatcher events.EventDispatcherInterface
 }
 
 func NewRetrievalOrderUseCase(
 	OrderRepository entity.OrderRepositoryInterface,
-	OrderCreated events.EventInterface,
-	EventDispatcher events.EventDispatcherInterface,
-) *CreateOrderUseCase {
-	return &CreateOrderUseCase{
+	// OrderCreated events.EventInterface,
+	// EventDispatcher events.EventDispatcherInterface,
+) *RetrievalOrderUseCase {
+	return &RetrievalOrderUseCase{
 		OrderRepository: OrderRepository,
-		OrderCreated:    OrderCreated,
-		EventDispatcher: EventDispatcher,
+		// OrderCreated:    OrderCreated,
+		// EventDispatcher: EventDispatcher,
 	}
 }
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/devfullcycle/20-CleanArch/internal/entity"
+	"desafio3/internal/entity"
 )
 
 type OrderRepository struct {

@@ -1,12 +1,11 @@
 package web
 
 import (
+	"desafio3/internal/entity"
+	"desafio3/internal/usecase"
+	"desafio3/pkg/events"
 	"encoding/json"
 	"net/http"
-
-	"github.com/devfullcycle/20-CleanArch/internal/entity"
-	"github.com/devfullcycle/20-CleanArch/internal/usecase"
-	"github.com/devfullcycle/20-CleanArch/pkg/events"
 )
 
 type WebOrderHandler struct {
@@ -49,22 +48,25 @@ func (h *WebOrderHandler) Create(w http.ResponseWriter, r *http.Request) {
 }
 
 func (h *WebOrderHandler) Order(w http.ResponseWriter, r *http.Request) {
-	
+
 	id := r.URL.Query().Get("id")
-	
-	var dto usecase.RetrivalOrderOutputDTO
+	if id == "" {
+		http.Error(w, "Id não informado", http.StatusInternalServerError)
+		return
+	}
+
+	input := usecase.RetrievalOrderInputDTO{ID: id}
+
+	retrivalUseCase := usecase.NewRetrievalOrderUseCase(h.OrderRepository)
+	output, err := retrivalUseCase.ExecuteRetrieval(input)
 	// err := json.NewDecoder(r.Body).Decode(&dto)
 	// if err != nil {
 	// 	http.Error(w, err.Error(), http.StatusBadRequest)
 	// 	return
 	// }
 
-
-
-
-
-	createOrder := usecase.NewCreateOrderUseCase(h.OrderRepository, h.OrderCreatedEvent, h.EventDispatcher)
-	output, err := createOrder.ExecuteCreate(dto)
+	// createOrder := usecase.NewCreateOrderUseCase(h.OrderRepository, h.OrderCreatedEvent, h.EventDispatcher)
+	// output, err := createOrder.ExecuteCreate(dto)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusInternalServerError)
 		return
