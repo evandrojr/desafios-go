@@ -47,3 +47,31 @@ func (h *WebOrderHandler) Create(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 }
+
+func (h *WebOrderHandler) Order(w http.ResponseWriter, r *http.Request) {
+	
+	id := r.URL.Query().Get("id")
+	
+	var dto usecase.RetrivalOrderOutputDTO
+	// err := json.NewDecoder(r.Body).Decode(&dto)
+	// if err != nil {
+	// 	http.Error(w, err.Error(), http.StatusBadRequest)
+	// 	return
+	// }
+
+
+
+
+
+	createOrder := usecase.NewCreateOrderUseCase(h.OrderRepository, h.OrderCreatedEvent, h.EventDispatcher)
+	output, err := createOrder.ExecuteCreate(dto)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+	err = json.NewEncoder(w).Encode(output)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusInternalServerError)
+		return
+	}
+}
