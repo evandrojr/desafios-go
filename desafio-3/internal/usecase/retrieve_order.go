@@ -34,26 +34,19 @@ func NewRetrieveOrderUseCase(
 	}
 }
 
-func (c *CreateOrderUseCase) RetrieveExecute(input OrderInputDTO) (OrderOutputDTO, error) {
-	order := entity.Order{
-		ID:    input.ID,
-		Price: input.Price,
-		Tax:   input.Tax,
-	}
-	order.CalculateFinalPrice()
-	if err := c.OrderRepository.Save(&order); err != nil {
-		return OrderOutputDTO{}, err
+func (c *RetrieveOrderUseCase) ExecuteRetrieve(input RetrieveOrderInputDTO) (RetrieveOrderOutputDTO, error) {
+
+	entity := entity.Order{ID: input.ID}
+	order, err := c.OrderRepository.Retrieve(entity)
+	if err != nil {
+		return RetrieveOrderOutputDTO{}, err
 	}
 
-	dto := OrderOutputDTO{
+	out := RetrieveOrderOutputDTO{
 		ID:         order.ID,
 		Price:      order.Price,
 		Tax:        order.Tax,
-		FinalPrice: order.Price + order.Tax,
+		FinalPrice: order.FinalPrice,
 	}
-
-	c.OrderCreated.SetPayload(dto)
-	c.EventDispatcher.Dispatch(c.OrderCreated)
-
-	return dto, nil
+	return out, nil
 }

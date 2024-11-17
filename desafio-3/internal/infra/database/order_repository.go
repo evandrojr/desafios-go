@@ -2,6 +2,8 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
+	"log"
 
 	"github.com/devfullcycle/20-CleanArch/internal/entity"
 )
@@ -33,4 +35,22 @@ func (r *OrderRepository) GetTotal() (int, error) {
 		return 0, err
 	}
 	return total, nil
+}
+
+func (r *OrderRepository) Retrieve(entityInput entity.Order) (entity.Order, error) {
+
+	query := "Select id, price, tax, final_price from orders where id = ?"
+	order := entity.Order{}
+
+	err := r.Db.QueryRow(query, entityInput.ID).Scan(&order.ID, &order.Price, &order.Tax, &order.FinalPrice) // Busca a linha e mapeia os dados
+	if err != nil {
+		if err == sql.ErrNoRows {
+			fmt.Println("Nenhum resultado encontrado.")
+		} else {
+			log.Fatalf("Erro ao executar a query: %v", err)
+		}
+		return entity.Order{}, err
+	}
+	return order, nil
+
 }
