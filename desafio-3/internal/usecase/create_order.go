@@ -3,6 +3,8 @@ package usecase
 import (
 	"desafio3/internal/entity"
 	"desafio3/pkg/events"
+
+	"github.com/kr/pretty"
 )
 
 type OrderInputDTO struct {
@@ -43,6 +45,7 @@ func (c *CreateOrderUseCase) ExecuteCreate(input OrderInputDTO) (OrderOutputDTO,
 		Tax:   input.Tax,
 	}
 	order.CalculateFinalPrice()
+	pretty.Println("AAAAAAAAAAAAA", order)
 	if err := c.OrderRepository.Save(&order); err != nil {
 		return OrderOutputDTO{}, err
 	}

@@ -6,6 +6,8 @@ import (
 	"desafio3/pkg/events"
 	"encoding/json"
 	"net/http"
+
+	"github.com/kr/pretty"
 )
 
 type WebOrderHandler struct {
@@ -50,6 +52,7 @@ func (h *WebOrderHandler) Create(w http.ResponseWriter, r *http.Request) {
 func (h *WebOrderHandler) Order(w http.ResponseWriter, r *http.Request) {
 
 	id := r.URL.Query().Get("id")
+	pretty.Println("id", id)
 	if id == "" {
 		http.Error(w, "Id não informado", http.StatusInternalServerError)
 		return
