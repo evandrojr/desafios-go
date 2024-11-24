@@ -49,7 +49,7 @@ func (h *WebOrderHandler) Create(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (h *WebOrderHandler) Order(w http.ResponseWriter, r *http.Request) {
+func (h *WebOrderHandler) GetOrder(w http.ResponseWriter, r *http.Request) {
 
 	id := r.URL.Query().Get("id")
 	pretty.Println("id", id)
