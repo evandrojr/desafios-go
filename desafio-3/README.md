@@ -2,16 +2,17 @@
 
 Fazer ==========================
 
-- Service ListOrders com GRPC
 - Query ListOrders GraphQL
 
 Fazendo ========================
 
-- Endpoint REST (GET /order)
+- Service ListOrders com GRPC
 
 Pronto =========================
 
 Executar migrations
+- Endpoint REST (GET /order)
+- Conserto e refatoração Endpoint REST (POST /order)
 
 
 ## Requisitos
