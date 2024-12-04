@@ -1,5 +1,9 @@
 # Desafio 3
 
+## Rodar:
+Renomeie: cmd/ordersystem/.env.example para cmd/ordersystem/.env 
+
+
 Fazer ==========================
 
 - Query ListOrders GraphQL
