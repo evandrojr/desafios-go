@@ -67,30 +67,17 @@ func (r *OrderRepository) List() ([]entity.Order, error) {
 	}
 	defer rows.Close()
 
-	for rows.Next() {
-		var id int
-		var nome string
+	var orders []entity.Order
 
-		if err := rows.Scan(&id, &nome); err != nil {
+	for rows.Next() {
+
+		if err := rows.Scan(&order.ID, &order.Price, &order.Tax, &order.FinalPrice); err != nil {
 			fmt.Println("Erro ao ler linha:", err)
 			return nil, err
 		}
-		fmt.Printf("ID: %d, Nome: %s\n", id, nome)
+		orders = append(orders, order)
 	}
 
-	if err := rows.Err(); err != nil {
-		fmt.Println("Erro após iteração:", err)
-	}
-
-	err := r.Db.Query(query).Scan(&order.ID, &order.Price, &order.Tax, &order.FinalPrice) // Busca a linha e mapeia os dados
-	if err != nil {
-		if err == sql.ErrNoRows {
-			fmt.Println("Nenhum resultado encontrado.")
-		} else {
-			log.Fatalf("Erro ao executar a query: %v", err)
-		}
-		return entity.Order{}, err
-	}
-	return order, nil
+	return orders, nil
 
 }
