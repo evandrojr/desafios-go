@@ -3,6 +3,19 @@
 ## Rodar:
 Renomeie: cmd/ordersystem/.env.example para cmd/ordersystem/.env 
 
+## Evans:
+
+```
+evans -r repl
+
+127.0.0.1:50051> package pb
+
+pb@127.0.0.1:50051> service OrderService
+
+pb.OrderService@127.0.0.1:50051> call ListOrders
+```
+
+## TODO
 
 Fazer ==========================
 
