@@ -36,43 +36,26 @@ func (s *OrderService) CreateOrder(ctx context.Context, in *pb.CreateOrderReques
 	}, nil
 }
 
-// func (c *OrderService) ListOrders(ctx context.Context, in *pb.Blank) (*pb.CategoryList, error) {
-// 	categories, err := c.CategoryDB.FindAll()
-// 	if err != nil {
-// 		return nil, err
-// 	}
+func (s *OrderService) ListOrders(ctx context.Context, in *pb.Blank) (*pb.OrderList, error) {
+	// s.ListOrders()
 
-// 	var categoriesResponse []*pb.Category
+	orders, err := s.ListOrderUseCase.ExecuteList()
+	if err != nil {
+		return nil, err
+	}
 
-// 	for _, category := range categories {
-// 		categoryResponse := &pb.Category{
-// 			Id:          category.ID,
-// 			Name:        category.Name,
-// 			Description: category.Description,
-// 		}
+	var ordersResponse []*pb.Order
 
-// 		categoriesResponse = append(categoriesResponse, categoryResponse)
-// 	}
+	for _, order := range orders {
+		orderResponse := &pb.Order{
+			Id:         order.ID,
+			Price:      order.Price,
+			Tax:        order.Tax,
+			FinalPrice: order.FinalPrice,
+		}
 
-// 	return &pb.CategoryList{Categories: categoriesResponse}, nil
-// }
+		ordersResponse = append(ordersResponse, orderResponse)
+	}
 
-// func (s *OrderService) ListOrder(ctx context.Context, in *pb.) (*pb.CreateOrderResponse, error) {
-// 	&pb.
-
-// 	// dto := usecase.OrderInputDTO{
-// 	// 	ID:    in.Id,
-// 	// 	Price: float64(in.Price),
-// 	// 	Tax:   float64(in.Tax),
-// 	// }
-// 	// output, err := s.CreateOrderUseCase.ExecuteCreate(dto)
-// 	// if err != nil {
-// 	// 	return nil, err
-// 	// }
-// 	// return &pb.CreateOrderResponse{
-// 	// 	Id:         output.ID,
-// 	// 	Price:      float32(output.Price),
-// 	// 	Tax:        float32(output.Tax),
-// 	// 	FinalPrice: float32(output.FinalPrice),
-// 	// }, nil
-// }
+	return &pb.OrderList{Orders: ordersResponse}, nil
+}
