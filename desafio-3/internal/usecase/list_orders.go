@@ -30,19 +30,26 @@ func NewListOrderUseCase(
 	}
 }
 
-func (c *ListOrderUseCase) ExecuteList() (ListOrderOutputDTO, error) {
+func (c *ListOrderUseCase) ExecuteList() ([]ListOrderOutputDTO, error) {
 
+	var listOrderOutputDTOList []ListOrderOutputDTO
 	// entity := entity.Order{ID: input.ID}
-	order, err := c.OrderRepository.List()
+	orders, err := c.OrderRepository.List()
 	if err != nil {
-		return ListOrderOutputDTO{}, err
+		return listOrderOutputDTOList, err
 	}
 
-	out := ListOrderOutputDTO{
-		ID:         order.ID,
-		Price:      order.Price,
-		Tax:        order.Tax,
-		FinalPrice: order.FinalPrice,
+	for _, order := range orders {
+
+		orderDto := ListOrderOutputDTO{
+			ID:         order.ID,
+			Price:      order.Price,
+			Tax:        order.Tax,
+			FinalPrice: order.FinalPrice,
+		}
+		listOrderOutputDTOList = append(listOrderOutputDTOList, orderDto)
+
 	}
-	return out, nil
+
+	return listOrderOutputDTOList, nil
 }
