@@ -8,10 +8,12 @@ import (
 
 	"desafio3/configs"
 	"desafio3/internal/event/handler"
+	"desafio3/internal/infra/database"
 	"desafio3/internal/infra/graph"
 	"desafio3/internal/infra/grpc/pb"
 	"desafio3/internal/infra/grpc/service"
 	"desafio3/internal/infra/web/webserver"
+	"desafio3/internal/usecase"
 	"desafio3/pkg/events"
 
 	graphql_handler "github.com/99designs/gqlgen/graphql/handler"
@@ -44,7 +46,9 @@ func main() {
 	})
 
 	createOrderUseCase := NewCreateOrderUseCase(db, eventDispatcher)
-	// listOrderUseCase := NewLi
+
+	orderRepository := database.NewOrderRepository(db)
+	listOrderUseCase := usecase.NewListOrderUseCase(orderRepository)
 
 	webserver := webserver.NewWebServer(configs.WebServerPort)
 	webOrderHandler := NewWebOrderHandler(db, eventDispatcher)
@@ -54,8 +58,10 @@ func main() {
 	go webserver.Start()
 
 	grpcServer := grpc.NewServer()
-	createOrderService := service.NewOrderService(*createOrderUseCase)
-	pb.RegisterOrderServiceServer(grpcServer, createOrderService)
+
+	grpcOrderService := service.NewOrderService(*createOrderUseCase, *listOrderUseCase)
+	pb.RegisterOrderServiceServer(grpcServer, grpcOrderService)
+
 	reflection.Register(grpcServer)
 
 	fmt.Println("Starting gRPC server on port", configs.GRPCServerPort)
