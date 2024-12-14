@@ -15,6 +15,19 @@ pb@127.0.0.1:50051> service OrderService
 pb.OrderService@127.0.0.1:50051> call ListOrders
 ```
 
+## GraphQL
+
+```
+mutation MyCreateCategory {
+  createOrder(input: {id: "Presunto", Price: 15.0, Tax: 10.0}) {
+    id
+    Price
+    Tax
+  }
+}
+```
+
+
 ## TODO
 
 Fazer ==========================
