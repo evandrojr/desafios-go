@@ -33,7 +33,6 @@ func NewListOrderUseCase(
 func (c *ListOrderUseCase) ExecuteList() ([]ListOrderOutputDTO, error) {
 
 	var listOrderOutputDTOList []ListOrderOutputDTO
-	// entity := entity.Order{ID: input.ID}
 	orders, err := c.OrderRepository.List()
 	if err != nil {
 		return listOrderOutputDTOList, err

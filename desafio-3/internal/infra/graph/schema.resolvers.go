@@ -8,7 +8,6 @@ import (
 	"context"
 	"desafio3/internal/infra/graph/model"
 	"desafio3/internal/usecase"
-	"fmt"
 )
 
 // CreateOrder is the resolver for the createOrder field.
@@ -32,7 +31,24 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input *model.OrderIn
 
 // Orders is the resolver for the orders field.
 func (r *queryResolver) Orders(ctx context.Context) ([]*model.Order, error) {
-	panic(fmt.Errorf("not implemented: Orders - orders"))
+
+	ordersDto, err := r.ListOrdersUseCase.ExecuteList()
+	if err != nil {
+		return nil, err
+	}
+	var ordersPointerJson []*model.Order
+
+	for _, orderDto := range ordersDto {
+
+		o := model.Order{ID: orderDto.ID,
+			Price:      orderDto.Price,
+			Tax:        orderDto.Tax,
+			FinalPrice: orderDto.FinalPrice,
+		}
+		ordersPointerJson = append(ordersPointerJson, &o)
+
+	}
+	return ordersPointerJson, nil
 }
 
 // Mutation returns MutationResolver implementation.
