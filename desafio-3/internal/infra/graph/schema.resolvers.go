@@ -8,6 +8,7 @@ import (
 	"context"
 	"desafio3/internal/infra/graph/model"
 	"desafio3/internal/usecase"
+	"fmt"
 )
 
 // CreateOrder is the resolver for the createOrder field.
@@ -29,7 +30,16 @@ func (r *mutationResolver) CreateOrder(ctx context.Context, input *model.OrderIn
 	}, nil
 }
 
+// Orders is the resolver for the orders field.
+func (r *queryResolver) Orders(ctx context.Context) ([]*model.Order, error) {
+	panic(fmt.Errorf("not implemented: Orders - orders"))
+}
+
 // Mutation returns MutationResolver implementation.
 func (r *Resolver) Mutation() MutationResolver { return &mutationResolver{r} }
 
+// Query returns QueryResolver implementation.
+func (r *Resolver) Query() QueryResolver { return &queryResolver{r} }
+
 type mutationResolver struct{ *Resolver }
+type queryResolver struct{ *Resolver }

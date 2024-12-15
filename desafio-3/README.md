@@ -25,7 +25,18 @@ mutation MyCreateCategory {
     Tax
   }
 }
+
+
+query OrderQuery {
+  orders{
+    id
+    Price
+    Tax
+    FinalPrice
+  }
+}
 ```
+
 
 
 ## TODO
