@@ -1,3 +1,19 @@
+##
+
+TODO:
+
+Fazer:
+
+injetar o middleware
+Strategy para injetar o Redis
+
+Fazendo:
+Carregando configurações
+
+Pronto:
+
+
+
 Objetivo: Desenvolver um rate limiter em Go que possa ser configurado para limitar o número máximo de requisições por segundo com base em um endereço IP específico ou em um token de acesso.
 
 Descrição: O objetivo deste desafio é criar um rate limiter em Go que possa ser utilizado para controlar o tráfego de requisições para um serviço web. O rate limiter deve ser capaz de limitar o número de requisições com base em dois critérios:
