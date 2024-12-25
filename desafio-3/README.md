@@ -1,7 +1,27 @@
 # Desafio 3
 
 ## Rodar:
+
+```
 Renomeie: cmd/ordersystem/.env.example para cmd/ordersystem/.env 
+
+docker-compose up
+Já vai deve subir o banco, migrations, compilar e subir o app
+
+Portas:
+REST web server: 8000
+gRPC server: 50051
+GraphQL server: 8080
+```
+
+
+## Rest:
+
+Instale a extensão Rest Client no VSCODE:
+
+https://marketplace.visualstudio.com/items?itemName=humao.rest-client
+
+Use as requisições GET e POST da pasta API
 
 ## Evans:
 
