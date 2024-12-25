@@ -45,6 +45,18 @@ services:
     environment:
       RABBITMQ_DEFAULT_USER: guest
       RABBITMQ_DEFAULT_PASS: guest
+
+  app:
+    build:
+      context: .  # Diretório atual
+    ports:
+      - "8080:8080"  # Mapeie a porta 8080 do contêiner para a porta 8080 do host
+    volumes:
+      - .:/app  # Para atualizar o código sem recriar o contêiner (opcional)
+    command: ["./main"]  # Comando para rodar o aplicativo
+    depends_on:
+      migrate:
+        condition: service_healthy      
 # volumes:
 #   mysqldata:
 networks:
