@@ -48,9 +48,9 @@ services:
 
   app:
     build:
-      context: .  # Diretório atual
+      context: .  
     ports:
-      - "8080:8080"  # Mapeie a porta 8080 do contêiner para a porta 8080 do host
+      - "8080:8080"  
       - "8000:8000"
       - "50051:50051"
     volumes:
