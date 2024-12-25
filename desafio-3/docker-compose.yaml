@@ -51,6 +51,8 @@ services:
       context: .  # Diretório atual
     ports:
       - "8080:8080"  # Mapeie a porta 8080 do contêiner para a porta 8080 do host
+      - "8000:8000"
+      - "50051:50051"
     volumes:
       - .:/app  # Para atualizar o código sem recriar o contêiner (opcional)
     command: ["./main"]  # Comando para rodar o aplicativo
