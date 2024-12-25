@@ -3,9 +3,12 @@
 ## Rodar:
 
 ```
-Renomeie: cmd/ordersystem/.env.example para cmd/ordersystem/.env 
+Renomeie:
+cmd/ordersystem/.env.example para cmd/ordersystem/.env 
 
+Execute:
 docker-compose up
+
 Já vai deve subir o banco, migrations, compilar e subir o app
 
 Portas:
@@ -56,24 +59,6 @@ query OrderQuery {
   }
 }
 ```
-
-
-
-## TODO
-
-Fazer ==========================
-
-- Query ListOrders GraphQL
-
-Fazendo ========================
-
-- Service ListOrders com GRPC
-
-Pronto =========================
-
-Executar migrations
-- Endpoint REST (GET /order)
-- Conserto e refatoração Endpoint REST (POST /order)
 
 
 ## Requisitos
