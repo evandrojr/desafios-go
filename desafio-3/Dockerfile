@@ -11,8 +11,8 @@ COPY . .
 RUN go mod tidy
 
 # Compile o aplicativo
-RUN go build -o main .
+# RUN go build -o main .
 
 # Especifique o comando para rodar o aplicativo
-RUN chmod +x /run.sh
-CMD ["./run.sh"]
+# RUN chmod +x /run.sh
+CMD ["cd cmd/ordersystem && go run main.go wire_gen.go"]

@@ -1,5 +1,3 @@
-version: "3"
-
 services:
   mysqldb:
     image: mysql:5.7
@@ -55,11 +53,13 @@ services:
       - "50051:50051"
     volumes:
       - .:/app  # Para atualizar o código sem recriar o contêiner (opcional)
-    command: ["./main"]  # Comando para rodar o aplicativo
+    command: ["./run.sh"]  # Comando para rodar o aplicativo
     depends_on:
       migrate:
         condition: service_healthy      
+
 # volumes:
 #   mysqldata:
+
 networks:
   mysqldb:
