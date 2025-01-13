@@ -9,7 +9,7 @@ cmd/ordersystem/.env.example para cmd/ordersystem/.env
 Execute:
 docker-compose up
 
-Já vai deve subir o banco, migrations, compilar e subir o app
+Já vai deve subir o banco, rodar as migrações, compilar e subir o app
 
 Portas:
 REST web server: 8000
@@ -36,6 +36,16 @@ evans -r repl
 pb@127.0.0.1:50051> service OrderService
 
 pb.OrderService@127.0.0.1:50051> call ListOrders
+{
+  "orders": [
+    {
+      "finalPrice": 101,
+      "id": "aes",
+      "price": 100.5,
+      "tax": 0.5
+    }
+  ]
+}
 ```
 
 ## GraphQL
