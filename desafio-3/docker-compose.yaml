@@ -1,8 +1,12 @@
+networks:
+  app_network:
+    driver: bridge
+
 services:
   mysqldb:
     image: mysql:5.7
     networks:
-      - mysqldb
+      - app_network
     container_name: mysql
     restart: always
     environment:
@@ -21,20 +25,29 @@ services:
       timeout: 3s
       retries: 5
 
-  migrate:
-    image: migrate/migrate
-    networks:
-      - default
-      - mysqldb
-    volumes:
-      - ./internal/infra/database/migrations:/migrations
-    command: "-path=/migrations -database 'mysql://root:root@tcp(mysqldb:3306)/orders' up"
-    depends_on:
-      mysqldb:
-        condition: service_healthy
+  # migrate:
+  #   image: migrate/migrate
+  #   container_name: migrate
+  #   networks:
+  #     - default
+  #     - mysqldb
+  #   volumes:
+  #     - ./internal/infra/database/migrations:/migrations
+  #   # command: ["-path=/migrations", "-database", "mysql://root:root@tcp(mysqldb:3306)/orders", "-verbose", "up"]
+  #   depends_on:
+  #     mysqldb:
+  #       condition: service_healthy
+    # healthcheck:
+    #   test: ["CMD-SHELL", "migrate -path=/migrations -database mysql://root:root@tcp(mysqldb:3306)/orders -verbose version"]
+    #   interval: 10s
+    #   timeout: 5s
+    #   retries: 3
+    # restart: "on-failure"  
 
   rabbitmq:
     image: rabbitmq:3-management
+    networks:
+      - app_network
     container_name: rabbitmq
     restart: always
     ports:
@@ -46,20 +59,25 @@ services:
 
   app:
     build:
-      context: .  
+      context: .
+    container_name: app
+    networks:
+      - app_network    
     ports:
-      - "8080:8080"  
+      - "8080:8080"
       - "8000:8000"
       - "50051:50051"
     volumes:
       - .:/app  # Para atualizar o código sem recriar o contêiner (opcional)
     command: ["./run.sh"]  # Comando para rodar o aplicativo
     depends_on:
-      migrate:
-        condition: service_healthy      
+      mysqldb:
+        condition: service_healthy
+    # depends_on:
+      # migrate:
+      #   condition: service_healthy
+    # networks:
+    #   - mysqldb    
 
-# volumes:
-#   mysqldata:
 
-networks:
-  mysqldb:
+
